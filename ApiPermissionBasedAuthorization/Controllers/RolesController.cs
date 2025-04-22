@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ namespace ApiPermissionBasedAuthorization.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "SuperAdmin")]
     public class RolesController : ControllerBase
     {
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -24,7 +26,7 @@ namespace ApiPermissionBasedAuthorization.Controllers
         }
 
         [HttpPost("AddRoleAsync")]
-        public async Task<IActionResult> AddRoleAsync(string roleName)
+        public async Task<IActionResult> AddRoleAsync([FromForm]string roleName)
         {
             // Validate the role name
             if (string.IsNullOrEmpty(roleName))
@@ -43,7 +45,5 @@ namespace ApiPermissionBasedAuthorization.Controllers
             // If there are errors, return them
             return BadRequest($"Failed to create role {roleName}. Errors: {string.Join(", ", result.Errors.Select(e => e.Description))}");
         }
-
-
     }
 }
